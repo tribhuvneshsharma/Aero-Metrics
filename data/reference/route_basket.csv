@@ -1,0 +1,17 @@
+route_code,origin,destination,weight,effective_from,effective_to,weight_source
+DEL-BOM,DEL,BOM,0.082,2026-01-01,,DGCA traffic proxy
+BOM-DEL,BOM,DEL,0.082,2026-01-01,,DGCA traffic proxy
+DEL-BLR,DEL,BLR,0.075,2026-01-01,,DGCA traffic proxy
+BLR-DEL,BLR,DEL,0.075,2026-01-01,,DGCA traffic proxy
+BOM-BLR,BOM,BLR,0.065,2026-01-01,,DGCA traffic proxy
+BLR-BOM,BLR,BOM,0.065,2026-01-01,,DGCA traffic proxy
+DEL-CCU,DEL,CCU,0.060,2026-01-01,,DGCA traffic proxy
+CCU-DEL,CCU,DEL,0.060,2026-01-01,,DGCA traffic proxy
+BLR-HYD,BLR,HYD,0.055,2026-01-01,,DGCA traffic proxy
+HYD-BLR,HYD,BLR,0.055,2026-01-01,,DGCA traffic proxy
+MAA-DEL,MAA,DEL,0.055,2026-01-01,,DGCA traffic proxy
+DEL-MAA,DEL,MAA,0.055,2026-01-01,,DGCA traffic proxy
+BOM-HYD,BOM,HYD,0.050,2026-01-01,,DGCA traffic proxy
+HYD-BOM,HYD,BOM,0.050,2026-01-01,,DGCA traffic proxy
+DEL-PNQ,DEL,PNQ,0.058,2026-01-01,,DGCA traffic proxy
+PNQ-DEL,PNQ,DEL,0.058,2026-01-01,,DGCA traffic proxy

@@ -1,0 +1,6 @@
+horizon,lead_time_days,weight,description
+T+1,1,0.10,Next-day booking horizon
+T+7,7,0.25,One-week booking horizon
+T+15,15,0.30,Two-week booking horizon
+T+30,30,0.20,One-month booking horizon
+T+45,45,0.15,Advance booking horizon
