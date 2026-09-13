@@ -57,3 +57,4 @@ def test_quality_score_computation():
         freshness_score=1.0
     )
     assert pytest.approx(score, 0.001) == 1.0
+

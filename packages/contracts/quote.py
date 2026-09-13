@@ -64,3 +64,4 @@ class NormalisedQuote(RawQuote):
     flags: List[str] = Field(default_factory=list)
     pipeline_version: str = "0.1.0"
     normalised_at: datetime = Field(default_factory=datetime.utcnow)
+

@@ -9,3 +9,4 @@
 3. **Lead-Time Dynamics**: Compare T+1 surge vs. stable T+30 booking horizon fares.
 4. **Data Quality & Traceability**: Click any data point to inspect raw quotes, cleaning decisions, imputation logs, and quality scores.
 5. **API & Open Standards**: Showcase OpenAPI documentation for RBI / NSO consumption.
+

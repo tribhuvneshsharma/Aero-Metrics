@@ -52,3 +52,4 @@ class HeadlineIndexModel(Base):
     coverage_ratio = Column(Float, nullable=False)
     quality_score = Column(Float, nullable=False)
     computed_at = Column(DateTime, nullable=False)
+

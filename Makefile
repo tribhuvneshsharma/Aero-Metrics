@@ -43,3 +43,4 @@ lint:
 
 demo: seed-demo process compute-index test
 	@echo "=== Demo verification successful! API & Dashboard are ready. ==="
+

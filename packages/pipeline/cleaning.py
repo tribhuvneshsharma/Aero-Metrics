@@ -32,3 +32,4 @@ def validate_and_normalise(raw_quotes: List[RawQuote]) -> Tuple[List[NormalisedQ
         normalised.append(norm)
 
     return normalised, issues
+

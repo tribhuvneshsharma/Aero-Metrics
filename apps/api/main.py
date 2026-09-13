@@ -42,3 +42,4 @@ def get_headline_index():
             source_mode="replay_fixture"
         )
     )
+

@@ -6,3 +6,4 @@ COPY apps/dashboard/package.json ./
 
 EXPOSE 3000
 CMD ["npm", "run", "dev"]
+

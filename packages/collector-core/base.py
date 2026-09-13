@@ -15,3 +15,4 @@ class BaseFareCollector(ABC):
         Fetch fares for a given route and date while adhering to rate limits.
         """
         pass
+

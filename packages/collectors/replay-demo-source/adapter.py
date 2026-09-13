@@ -15,3 +15,4 @@ class ReplayDemoSource(BaseFareCollector):
     def fetch_quotes(self, origin: str, destination: str, travel_date: date) -> List[RawQuote]:
         # Reads deterministic snapshot data
         return []
+

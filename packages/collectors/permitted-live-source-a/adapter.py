@@ -12,3 +12,4 @@ class PermittedLiveSourceA(BaseFareCollector):
     def fetch_quotes(self, origin: str, destination: str, travel_date: date) -> List[RawQuote]:
         # Implement permitted rate-limited fetch
         return []
+

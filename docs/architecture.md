@@ -44,3 +44,4 @@ flowchart LR
 4. **API & Dashboard (`apps/api/`, `apps/dashboard/`)**
    - FastAPI microservice exposing statistical endpoints and OpenAPI documentation.
    - Next.js dashboard featuring executive overview, route heatmap, lead-time curves, fare decomposition, and data governance panel.
+

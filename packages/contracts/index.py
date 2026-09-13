@@ -67,3 +67,4 @@ class HeadlineIndex(BaseModel):
     thirty_day_change_pct: Optional[float] = None
     quality_metadata: QualityMetadata
     computed_at: datetime = Field(default_factory=datetime.utcnow)
+

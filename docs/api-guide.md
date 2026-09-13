@@ -16,3 +16,4 @@ The FastAPI service exposes policy-grade endpoints for macroeconomic researchers
 - `GET /v1/data-quality/summary`: Real-time data quality score, coverage ratios, and imputation event logs.
 - `GET /v1/methodology`: Active methodology parameters, formulas, and version strings.
 - `GET /docs`: Interactive Swagger UI documentation.
+

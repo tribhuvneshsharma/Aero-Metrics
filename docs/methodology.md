@@ -35,3 +35,4 @@ Weights $w(r)$ sum to 1.0 and are derived from DGCA passenger traffic volume pro
 3. Full-day outage: carry forward the last valid route-horizon price for **at most 2 days** (`imputed_last_observation`).
 4. Beyond 2 days: exclude component, dynamically re-normalise remaining horizon weights, lower quality score, label index `partial_coverage`.
 5. If weighted basket coverage drops below 70%, suppress headline index generation to prevent misleading signals.
+

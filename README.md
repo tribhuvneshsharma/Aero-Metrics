@@ -101,3 +101,4 @@ make demo
 - **Route Index**: $\text{RouteIndex}(r,t) = 100 \times \sum_h [v(h) \times R(r,h,t)]$.
 - **Headline APIx**: $\text{APIx}(t) = \sum_r [w(r) \times \text{RouteIndex}(r,t)]$.
 - **Imputation Policy**: Maximum 2 days carry-forward, then dynamic horizon weight re-normalisation with quality status logging.
+

@@ -19,3 +19,4 @@ CREATE TABLE IF NOT EXISTS lead_time_weights (
     weight NUMERIC(4, 2) NOT NULL,
     description VARCHAR(100)
 );
+

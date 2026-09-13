@@ -9,3 +9,4 @@ To prove reproducible index performance without volatile network calls during ev
 ## 2. Sensitivity Analysis
 - Evaluates headline stability under $\pm 20\%$ horizon weight shifts.
 - Measures volatility under route exclusion scenarios.
+

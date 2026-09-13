@@ -18,3 +18,4 @@ def test_headline_endpoint():
     data = response.json()
     assert "headline_apix" in data
     assert data["quality_metadata"]["quality_status"] == "pass"
+

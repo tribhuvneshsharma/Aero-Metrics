@@ -18,3 +18,4 @@ def run_index_computation():
 
 if __name__ == "__main__":
     logger.info("Starting APIx Scheduler service...")
+

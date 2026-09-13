@@ -15,3 +15,4 @@ def calculate_quality_score(
         0.20 * component_completeness +
         0.10 * freshness_score
     )
+

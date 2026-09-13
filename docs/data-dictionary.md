@@ -21,3 +21,4 @@
 - `taxes_and_statutory_fees`: GST, User Development Fee (UDF), Passenger Service Fee (PSF).
 - `mandatory_total_fare`: Final payable price for ticket issuance without optional ancillaries.
 - `currency`: ISO-4217 code (INR).
+
