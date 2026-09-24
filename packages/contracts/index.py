@@ -1,6 +1,7 @@
 from datetime import date, datetime
 from enum import Enum
-from typing import Optional, List
+from typing import Optional
+
 from pydantic import BaseModel, Field
 
 
@@ -34,6 +35,7 @@ class RouteDailyPrice(BaseModel):
     collection_date: date
     median_fare: float
     observation_count: int
+
     min_fare: Optional[float] = None
     max_fare: Optional[float] = None
     imputed: bool = False
@@ -67,4 +69,3 @@ class HeadlineIndex(BaseModel):
     thirty_day_change_pct: Optional[float] = None
     quality_metadata: QualityMetadata
     computed_at: datetime = Field(default_factory=datetime.utcnow)
-

@@ -1,8 +1,8 @@
-from typing import List, Tuple
-from packages.contracts import RawQuote, NormalisedQuote, ValidationStatus
+
+from packages.contracts import NormalisedQuote, RawQuote, ValidationStatus
 
 
-def validate_and_normalise(raw_quotes: List[RawQuote]) -> Tuple[List[NormalisedQuote], List[str]]:
+def validate_and_normalise(raw_quotes: list[RawQuote]) -> tuple[list[NormalisedQuote], list[str]]:
     """
     Validates fare totals, checks mandatory fare components, deduplicates across sources,
     and applies canonical flight keys.

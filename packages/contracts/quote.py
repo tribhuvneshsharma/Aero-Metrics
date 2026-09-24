@@ -1,8 +1,9 @@
-from datetime import datetime, date
-from enum import Enum
-from typing import Optional, List
-from pydantic import BaseModel, Field
 import uuid
+from datetime import date, datetime
+from enum import Enum
+from typing import Optional
+
+from pydantic import BaseModel, Field
 
 
 class SourceMode(str, Enum):
@@ -61,7 +62,6 @@ class NormalisedQuote(RawQuote):
     canonical_key: str
     validation_status: ValidationStatus = ValidationStatus.VALID
     quality_status: str = "pass"
-    flags: List[str] = Field(default_factory=list)
+    flags: list[str] = Field(default_factory=list)
     pipeline_version: str = "0.1.0"
     normalised_at: datetime = Field(default_factory=datetime.utcnow)
-

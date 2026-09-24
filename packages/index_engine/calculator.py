@@ -1,9 +1,9 @@
 import statistics
-from typing import List, Dict
+
 from packages.contracts import NormalisedQuote, ValidationStatus
 
 
-def compute_route_horizon_median(quotes: List[NormalisedQuote]) -> float:
+def compute_route_horizon_median(quotes: list[NormalisedQuote]) -> float:
     """
     P(r, h, t) = median(valid canonical total fares for r, h, t)
     """
@@ -18,8 +18,8 @@ def compute_route_horizon_median(quotes: List[NormalisedQuote]) -> float:
 
 
 def aggregate_route_index(
-    horizon_relatives: Dict[str, float],
-    horizon_weights: Dict[str, float]
+    horizon_relatives: dict[str, float],
+    horizon_weights: dict[str, float]
 ) -> float:
     """
     RouteIndex(r, t) = 100 * sum(v(h) * R(r, h, t))
@@ -33,8 +33,8 @@ def aggregate_route_index(
 
 
 def aggregate_headline_apix(
-    route_indices: Dict[str, float],
-    route_weights: Dict[str, float]
+    route_indices: dict[str, float],
+    route_weights: dict[str, float]
 ) -> float:
     """
     APIx(t) = sum(w(r) * RouteIndex(r, t))
