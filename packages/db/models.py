@@ -10,6 +10,7 @@ class RawQuoteModel(Base):
     __tablename__ = "raw_quotes"
 
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    quote_id = Column(String, nullable=True, index=True)
     collection_run_id = Column(String, nullable=False, index=True)
     source = Column(String, nullable=False)
     source_mode = Column(String, nullable=False)

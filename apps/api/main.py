@@ -26,27 +26,37 @@ from packages.pipeline.cleaning import validate_and_normalise
 from packages.pipeline.runner import run_collection_cycle
 
 logger = logging.getLogger("apix-api")
-COLLECTION_INTERVAL_SECONDS = int(os.getenv("COLLECTION_INTERVAL_SECONDS", "3600"))  # Default: 1 hour
+COLLECTION_INTERVAL_SECONDS = int(os.getenv("COLLECTION_INTERVAL_SECONDS", "300"))  # Default: 5 minutes
 
 
-async def background_hourly_updater():
-    """Background task that triggers a collection and index recomputation cycle every hour."""
+async def background_sync_worker():
+    """
+    Background worker that runs high-frequency airfare collection & index updates.
+    Executes an initial cycle shortly after startup (5s warm-up),
+    and repeats every 5 minutes (or COLLECTION_INTERVAL_SECONDS).
+    """
+    await asyncio.sleep(5)
     while True:
         try:
-            await asyncio.sleep(COLLECTION_INTERVAL_SECONDS)
-            logger.info("Executing scheduled hourly collection cycle...")
-            await asyncio.to_thread(run_collection_cycle, max_routes=4)
+            logger.info("Executing scheduled airfare collection cycle (5-minute cadence)...")
+            await asyncio.to_thread(run_collection_cycle, max_routes=2)
+            logger.info("Collection cycle completed. Next sync in %d seconds.", COLLECTION_INTERVAL_SECONDS)
         except asyncio.CancelledError:
             break
         except Exception as e:
             logger.error("Error during background collection cycle: %s", e)
 
+        try:
+            await asyncio.sleep(COLLECTION_INTERVAL_SECONDS)
+        except asyncio.CancelledError:
+            break
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     init_db()
-    # Start the 1-hour recurring background collection worker
-    update_task = asyncio.create_task(background_hourly_updater())
+    # Start the 5-minute recurring background collection worker
+    update_task = asyncio.create_task(background_sync_worker())
     yield
     # Clean shutdown
     update_task.cancel()
@@ -90,7 +100,13 @@ def get_dashboard():
 @app.get("/health", tags=["System"])
 def health_check():
     """Service health and operational status."""
-    return {"status": "ok", "service": "apix-api", "version": "0.1.0"}
+    return {
+        "status": "ok",
+        "service": "apix-api",
+        "version": "0.1.0",
+        "sync_interval_seconds": COLLECTION_INTERVAL_SECONDS,
+        "sync_interval_minutes": round(COLLECTION_INTERVAL_SECONDS / 60, 1),
+    }
 
 
 @app.get("/v1/index/headline", response_model=HeadlineIndex, tags=["Index"])
@@ -172,26 +188,28 @@ def get_index_timeseries(days: int = Query(default=30, ge=1, le=365), db: Sessio
 @app.get("/v1/routes/heatmap", tags=["Analytics"])
 def get_route_heatmap(db: Session = Depends(get_db)):
     """
-    Get sector-wise route inflation heatmaps across domestic city pairs.
+    Get sector-wise route inflation heatmaps across all 16 domestic city pairs.
+    Always returns the latest available index observation for every route in the basket.
     """
-    latest_date_row = (
-        db.query(RouteIndexModel.index_date)
-        .order_by(RouteIndexModel.index_date.desc())
-        .first()
-    )
-    if not latest_date_row:
-        return {"routes": []}
-
-    latest_date = latest_date_row[0]
-    routes = (
+    all_records = (
         db.query(RouteIndexModel)
-        .filter(RouteIndexModel.index_date == latest_date)
+        .order_by(RouteIndexModel.index_date.desc(), RouteIndexModel.computed_at.desc())
         .all()
     )
+    if not all_records:
+        return {"routes": []}
+
+    latest_by_route = {}
+    for r in all_records:
+        if r.route_code not in latest_by_route:
+            latest_by_route[r.route_code] = r
+
+    routes_list = sorted(latest_by_route.values(), key=lambda x: x.route_code)
+    as_of = max((r.index_date for r in routes_list), default=datetime.now(timezone.utc).date())
 
     return {
-        "as_of_date": str(latest_date),
-        "total_routes": len(routes),
+        "as_of_date": str(as_of),
+        "total_routes": len(routes_list),
         "routes": [
             {
                 "route_code": r.route_code,
@@ -199,7 +217,7 @@ def get_route_heatmap(db: Session = Depends(get_db)):
                 "inflation_pct": round(r.index_value - 100.0, 2),
                 "status": "above_base" if r.index_value >= 100.0 else "below_base",
             }
-            for r in routes
+            for r in routes_list
         ],
     }
 
@@ -295,6 +313,7 @@ def trigger_live_collection(
     for q in clean_quotes:
         db.add(
             RawQuoteModel(
+                id=q.quote_id,
                 quote_id=q.quote_id,
                 collection_run_id=q.collection_run_id,
                 source=q.source,
