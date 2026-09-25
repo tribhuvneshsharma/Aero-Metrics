@@ -65,11 +65,22 @@
           <p class="text-xs text-slate-400">High-Frequency Airfare Inflation Measurement Platform • SIH PS 56</p>
         </div>
       </div>
-      <div class="flex items-center space-x-4">
+      <div class="flex items-center space-x-3">
         <div
-          class="hidden md:flex items-center space-x-2 text-xs text-slate-400 bg-slate-800/80 px-3 py-1.5 rounded-lg border border-slate-700/60">
-          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-          <span>Target Audience: <strong class="text-slate-200">NSO (MoSPI) & RBI Monetary Policy</strong></span>
+          class="hidden sm:flex items-center space-x-2 text-xs bg-slate-800/90 px-3 py-1.5 rounded-lg border border-slate-700/60 shadow-sm">
+          <span class="relative flex h-2 w-2">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+          </span>
+          <span class="text-slate-300 font-medium">Auto-Sync: <span class="text-emerald-400 font-semibold">Every
+              5m</span></span>
+          <span class="text-slate-600">•</span>
+          <span class="text-slate-400">Refreshed: <span id="last-updated" class="text-slate-200 mono">Just
+              now</span></span>
+        </div>
+        <div
+          class="hidden lg:flex items-center space-x-2 text-xs text-slate-400 bg-slate-800/80 px-3 py-1.5 rounded-lg border border-slate-700/60">
+          <span>Target Audience: <strong class="text-slate-200">NSO & RBI Policy</strong></span>
         </div>
         <a href="/docs" target="_blank"
           class="text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded-lg border border-slate-700 transition">
@@ -610,16 +621,25 @@
       }
     });
 
-    function refreshData() {
-      loadHeadline();
-      loadTimeseries();
-      loadElasticity();
-      loadHeatmap();
-      loadDGCA();
+    async function refreshData() {
+      await Promise.all([
+        loadHeadline(),
+        loadTimeseries(),
+        loadElasticity(),
+        loadHeatmap(),
+        loadDGCA()
+      ]);
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      const el = document.getElementById('last-updated');
+      if (el) el.innerText = timeStr;
     }
 
     // Initial load
     refreshData();
+
+    // Auto-refresh data every 30 seconds to poll real-time sync updates
+    setInterval(refreshData, 30000);
   </script>
 </body>
 

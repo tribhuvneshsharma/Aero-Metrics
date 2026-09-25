@@ -58,9 +58,29 @@ def run_collection_cycle(max_routes: int = 4):
         collector = GoogleFlightsCollector(currency="INR")
         today = datetime.now(timezone.utc).date()
 
+        # Baseline typical fares for routes (in INR) matching reference basket
+        base_fares = {
+            "DEL-BOM": 5800.0, "BOM-DEL": 5800.0,
+            "DEL-BLR": 6200.0, "BLR-DEL": 6200.0,
+            "BOM-BLR": 4600.0, "BLR-BOM": 4600.0,
+            "DEL-CCU": 5400.0, "CCU-DEL": 5400.0,
+            "BLR-HYD": 3800.0, "HYD-BLR": 3800.0,
+            "MAA-DEL": 6100.0, "DEL-MAA": 6100.0,
+            "BOM-HYD": 4100.0, "HYD-BOM": 4100.0,
+            "DEL-PNQ": 5100.0, "PNQ-DEL": 5100.0,
+        }
+
+        horizon_multipliers = {
+            "T+1": 2.40,
+            "T+7": 1.30,
+            "T+15": 1.15,
+            "T+30": 0.95,
+            "T+45": 0.85,
+        }
+
         # Pick key routes for high-frequency sampling (to prevent aggressive spamming)
         sample_routes = routes[:max_routes] if max_routes else routes
-        lead_time_map = {"T+1": 1, "T+7": 7, "T+15": 15, "T+30": 30}
+        lead_time_map = {"T+1": 1, "T+7": 7, "T+15": 15}
 
         collected_quotes_count = 0
         daily_route_indices = {}
@@ -80,7 +100,7 @@ def run_collection_cycle(max_routes: int = 4):
                         destination=dest,
                         travel_date=travel_date,
                     )
-                    time.sleep(1.0)  # Polite jitter
+                    time.sleep(0.5)  # Polite jitter
 
                     if not raw_quotes:
                         continue
@@ -92,6 +112,7 @@ def run_collection_cycle(max_routes: int = 4):
                     for q in clean_quotes:
                         db.add(
                             RawQuoteModel(
+                                id=q.quote_id,
                                 quote_id=q.quote_id,
                                 collection_run_id=q.collection_run_id,
                                 source=q.source,
@@ -113,23 +134,38 @@ def run_collection_cycle(max_routes: int = 4):
 
                     # Compute median fare P(r, h, t)
                     median_fare = compute_route_horizon_median(clean_quotes)
-                    base_estimate = 5000.0 * (1.8 if h_code == "T+1" else (1.2 if h_code == "T+7" else 1.0))
+                    base_p = base_fares.get(rcode, 5000.0)
+                    h_mult = horizon_multipliers.get(h_code, 1.0)
+                    base_estimate = base_p * h_mult
                     relative = median_fare / base_estimate
                     horizon_relatives[h_code] = relative
 
-                    # Update/Insert route daily price
-                    db.add(
-                        RouteDailyPriceModel(
-                            route_code=rcode,
-                            origin=orig,
-                            destination=dest,
-                            horizon=h_code,
-                            lead_time_days=lt_days,
-                            collection_date=today,
-                            median_fare=round(median_fare, 2),
-                            observation_count=len(clean_quotes),
+                    # Upsert route daily price
+                    existing_price = (
+                        db.query(RouteDailyPriceModel)
+                        .filter(
+                            RouteDailyPriceModel.route_code == rcode,
+                            RouteDailyPriceModel.horizon == h_code,
+                            RouteDailyPriceModel.collection_date == today,
                         )
+                        .first()
                     )
+                    if existing_price:
+                        existing_price.median_fare = round(median_fare, 2)
+                        existing_price.observation_count = len(clean_quotes)
+                    else:
+                        db.add(
+                            RouteDailyPriceModel(
+                                route_code=rcode,
+                                origin=orig,
+                                destination=dest,
+                                horizon=h_code,
+                                lead_time_days=lt_days,
+                                collection_date=today,
+                                median_fare=round(median_fare, 2),
+                                observation_count=len(clean_quotes),
+                            )
+                        )
 
                 except Exception as e:
                     logger.warning("Error fetching %s for %s: %s", rcode, h_code, e)
@@ -145,23 +181,43 @@ def run_collection_cycle(max_routes: int = 4):
                 r_idx = aggregate_route_index(horizon_relatives, horizon_weights)
                 daily_route_indices[rcode] = r_idx
 
-                db.add(
-                    RouteIndexModel(
-                        route_code=rcode,
-                        index_date=today,
-                        frequency="daily",
-                        index_value=round(r_idx, 2),
-                        coverage_ratio=1.0,
-                        computed_at=datetime.now(timezone.utc),
-                    )
+                existing_r_idx = (
+                    db.query(RouteIndexModel)
+                    .filter(RouteIndexModel.route_code == rcode, RouteIndexModel.index_date == today)
+                    .first()
                 )
+                if existing_r_idx:
+                    existing_r_idx.index_value = round(r_idx, 2)
+                    existing_r_idx.computed_at = datetime.now(timezone.utc)
+                else:
+                    db.add(
+                        RouteIndexModel(
+                            route_code=rcode,
+                            index_date=today,
+                            frequency="daily",
+                            index_value=round(r_idx, 2),
+                            coverage_ratio=1.0,
+                            computed_at=datetime.now(timezone.utc),
+                        )
+                    )
 
-        # Compute new headline index
-        if daily_route_indices:
-            # Re-normalize across sampled routes
-            total_weight = sum(route_weights.get(r, 0.05) for r in daily_route_indices)
-            norm_weights = {r: route_weights.get(r, 0.05) / total_weight for r in daily_route_indices}
-            headline_val = round(aggregate_headline_apix(daily_route_indices, norm_weights), 2)
+        # Compute new headline index across the complete national 16-route basket
+        all_route_indices = {}
+        latest_rows = (
+            db.query(RouteIndexModel)
+            .order_by(RouteIndexModel.index_date.desc(), RouteIndexModel.computed_at.desc())
+            .all()
+        )
+        for row in latest_rows:
+            if row.route_code not in all_route_indices:
+                all_route_indices[row.route_code] = row.index_value
+
+        all_route_indices.update(daily_route_indices)
+
+        if all_route_indices:
+            total_weight = sum(route_weights.get(r, 0.05) for r in all_route_indices)
+            norm_weights = {r: route_weights.get(r, 0.05) / total_weight for r in all_route_indices}
+            headline_val = round(aggregate_headline_apix(all_route_indices, norm_weights), 2)
 
             # Check previous day value for 1-day change
             prev_row = (
