@@ -1,46 +1,24 @@
-.PHONY: up down migrate seed-demo collect process compute-index test lint demo help
+.PHONY: run seed scrape test lint help
 
 help:
-	@echo "Aero-Metrics (APIx) Monorepo Commands:"
-	@echo "  make up            - Start database, object store, API, dashboard"
-	@echo "  make down          - Stop local docker services"
-	@echo "  make migrate       - Apply database schema migrations"
-	@echo "  make seed-demo     - Load deterministic 30-day replay data"
-	@echo "  make collect       - Run permitted collection job"
-	@echo "  make process       - Clean and normalise pending raw quotes"
-	@echo "  make compute-index - Calculate all affected route & headline indices"
-	@echo "  make test          - Run full automated test suite"
-	@echo "  make lint          - Run formatting, type, and lint checks"
-	@echo "  make demo          - Run full vertical demo: seed -> process -> compute -> smoke test"
+	@echo "Aero-Metrics (APIx) Clean Commands:"
+	@echo "  make run    - Start the FastAPI service & interactive dashboard"
+	@echo "  make seed   - Seed database with 30-day historical index & DGCA benchmarks"
+	@echo "  make scrape - Fetch real-time live flight prices from Google Flights"
+	@echo "  make test   - Run automated test suite (Pytest)"
+	@echo "  make lint   - Run code linter and quality checks (Ruff)"
 
-up:
-	docker compose up -d
+run:
+	uvicorn apps.api.main:app --reload
 
-down:
-	docker compose down
+seed:
+	python scripts/seed_30d_history.py
 
-migrate:
-	python -m packages.db.migrate
-
-seed-demo:
-	python -m packages.collector_core.replay --seed-file data/replay-30d/seed.json
-
-collect:
-	python -m packages.collector_core.runner
-
-process:
-	python -m packages.pipeline.process
-
-compute-index:
-	python -m packages.index_engine.calculator
+scrape:
+	python scripts/fetch_google_flights.py --origin DEL --destination BOM --lead-days 7
 
 test:
 	pytest tests/
 
 lint:
 	ruff check .
-	mypy packages/ apps/
-
-demo: seed-demo process compute-index test
-	@echo "=== Demo verification successful! API & Dashboard are ready. ==="
-
