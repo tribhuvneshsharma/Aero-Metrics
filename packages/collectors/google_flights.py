@@ -6,7 +6,7 @@ from typing import Optional
 
 from fast_flights import FlightData, Passengers, get_flights
 
-from packages.collectors.base import BaseFareCollector
+from packages.collector_core.base import BaseFareCollector
 from packages.contracts import AvailabilityStatus, RawQuote, SourceMode
 
 logger = logging.getLogger("apix-google-flights-collector")
