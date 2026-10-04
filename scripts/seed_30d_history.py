@@ -93,8 +93,8 @@ def seed_historical_data():
     days_to_generate = 30
     start_date = today - timedelta(days=days_to_generate - 1)
 
-    print(f"📊 Generating {days_to_generate} days of historical airfare index data...")
-    print(f"📅 Date range: {start_date} to {today}")
+    print(f"Generating {days_to_generate} days of historical airfare index data...")
+    print(f"Date range: {start_date} to {today}")
 
     headline_history = []
 
