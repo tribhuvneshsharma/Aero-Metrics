@@ -7,7 +7,7 @@ import {
 } from 'recharts'
 
 // ── API base ────────────────────────────────────────────────────────────────
-const API = 'http://localhost:8000'
+const API = 'https://aero-metrics.onrender.com'
 
 async function get(path: string) {
   try {
@@ -162,7 +162,7 @@ export default function Dashboard() {
         {/* Offline banner */}
         {!loading && !apiOk && (
           <div className="rounded-xl bg-red-50 border border-red-200 text-red-700 px-4 py-3 text-sm font-medium">
-            ⚠️ Cannot reach the FastAPI backend at <code className="font-mono">localhost:8000</code>. 
+            ⚠️ Cannot reach the FastAPI backend at <code className="font-mono">{API}</code>. 
             Run: <code className="font-mono bg-red-100 px-1 rounded">uvicorn apps.api.main:app --port 8000</code>
           </div>
         )}
