@@ -254,3 +254,12 @@ def generate_and_seed_30d_replay(db: Session = None, days_count: int = 30, force
     finally:
         if close_after:
             db.close()
+
+def run_collection_cycle(max_routes: int = 4):
+    """
+    Dummy/stub collection cycle for background tasks or scheduled runs.
+    """
+    import logging
+    logger = logging.getLogger(__name__)
+    logger.info(f"Running collection cycle for {max_routes} routes.")
+    pass

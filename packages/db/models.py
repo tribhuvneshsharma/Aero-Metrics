@@ -132,3 +132,14 @@ class HeadlineIndexModel(Base):
     imputed_weight = Column(Float, default=0.0)
     excluded_weight = Column(Float, default=0.0)
     computed_at = Column(DateTime, default=datetime.utcnow)
+
+
+class DGCABenchmarkModel(Base):
+    __tablename__ = "dgca_benchmarks"
+
+    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    report_date = Column(Date, nullable=False, index=True)
+    route_code = Column(String(10), nullable=False, index=True)
+    dgca_avg_fare = Column(Float, nullable=False)
+    apix_route_index = Column(Float, nullable=False)
+    passenger_volume = Column(Integer, nullable=True)
