@@ -8,7 +8,7 @@ from typing import Optional
 
 from fastapi import Depends, FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, FileResponse
 from sqlalchemy.orm import Session
 
 from packages.collectors import GoogleFlightsCollector
@@ -71,7 +71,12 @@ app = FastAPI(
     version="0.1.0",
     description="High-frequency supplementary airfare-price measurement API for NSO and RBI institutional analysis.",
     lifespan=lifespan,
+    swagger_favicon_url="/favicon.ico",
 )
+
+@app.get("/favicon.ico", include_in_schema=False)
+def get_favicon():
+    return FileResponse(os.path.join(Path(__file__).parent, "icon.svg"), media_type="image/svg+xml")
 
 app.add_middleware(
     CORSMiddleware,
