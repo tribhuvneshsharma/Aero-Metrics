@@ -49,7 +49,7 @@ Aero-Metrics/
 | **Data Cleaning Pipeline** | ✅ Active | Filters negative/zero fares, removes outliers, separates base fare vs statutory taxes/fees, and canonicalises flight keys. |
 | **30-Day Historical Database** | ✅ Active | Persistent SQLite/Postgres database seeded with 30 days of daily indices and DGCA benchmark comparisons. |
 | **Index Engine (APIx)** | ✅ Active | Computes route-horizon daily medians $P(r,h,t)$, advance-booking aggregates, and weighted National Headline APIx. |
-| **Policy API (FastAPI)** | ✅ Active | Typed REST endpoints with Swagger docs at `http://127.0.0.1:8000/docs` ready for NSO/RBI integration. |
+| **Policy API (FastAPI)** | ✅ Active | Typed REST endpoints with Swagger docs at `https://aero-metrics.onrender.com/docs` ready for NSO/RBI integration. |
 
 ---
 
@@ -81,12 +81,12 @@ uvicorn apps.api.main:app --reload
 ```
 
 Open your browser:
-* **Interactive API Documentation:** [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
-* **Latest Headline APIx:** [http://127.0.0.1:8000/v1/index/headline](http://127.0.0.1:8000/v1/index/headline)
-* **30-Day Historical Time-Series:** [http://127.0.0.1:8000/v1/index/timeseries?days=30](http://127.0.0.1:8000/v1/index/timeseries?days=30)
-* **Sector-Wise Route Heatmap:** [http://127.0.0.1:8000/v1/routes/heatmap](http://127.0.0.1:8000/v1/routes/heatmap)
-* **Lead-Time Elasticity Curves:** [http://127.0.0.1:8000/v1/analytics/elasticity](http://127.0.0.1:8000/v1/analytics/elasticity)
-* **DGCA 30-Day Backtest Comparison:** [http://127.0.0.1:8000/v1/backtest/dgca](http://127.0.0.1:8000/v1/backtest/dgca)
+* **Interactive API Documentation:** [https://aero-metrics.onrender.com/docs](https://aero-metrics.onrender.com/docs)
+* **Latest Headline APIx:** [https://aero-metrics.onrender.com/v1/index/headline](https://aero-metrics.onrender.com/v1/index/headline)
+* **30-Day Historical Time-Series:** [https://aero-metrics.onrender.com/v1/index/timeseries?days=30](https://aero-metrics.onrender.com/v1/index/timeseries?days=30)
+* **Sector-Wise Route Heatmap:** [https://aero-metrics.onrender.com/v1/routes/heatmap](https://aero-metrics.onrender.com/v1/routes/heatmap)
+* **Lead-Time Elasticity Curves:** [https://aero-metrics.onrender.com/v1/analytics/elasticity](https://aero-metrics.onrender.com/v1/analytics/elasticity)
+* **DGCA 30-Day Backtest Comparison:** [https://aero-metrics.onrender.com/v1/backtest/dgca](https://aero-metrics.onrender.com/v1/backtest/dgca)
 
 ---
 
