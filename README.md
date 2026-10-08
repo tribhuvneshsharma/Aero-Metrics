@@ -1,37 +1,40 @@
-# Aero-Metrics — Real-time Airfare Price Index (APIx)
+﻿# Aero-Metrics â€” Real-time Airfare Price Index (APIx)
 
-> **Smart India Hackathon (SIH 2026) — Problem Statement 56**  
+> **Smart India Hackathon (SIH 2026) â€” Problem Statement 56**  
 > An automated, high-frequency airfare price measurement platform converting online airfare quotes into transparent, governed, route-level and headline indices for NSO and RBI retail inflation analysis.
-
+## 🚀 Live Prototype Links (For SIH Judges)
+* **Frontend Dashboard:** [https://aero-metrics.vercel.app](https://aero-metrics.vercel.app)
+* **Backend API Docs:** [https://aero-metrics.onrender.com/docs](https://aero-metrics.onrender.com/docs)
+* **Live Scraper Endpoint:** [POST /v1/collect/live](https://aero-metrics.onrender.com/docs#/default/trigger_live_scrape_v1_collect_live_post) (Trigger real-time fetch)
 ---
 
 ## 1. Clean System Architecture
 
 ```text
 Aero-Metrics/
-├── apps/
-│   ├── api/                       # FastAPI policy service & OpenAPI docs
-│   └── dashboard/                 # Next.js interactive policy dashboard
-├── packages/
-│   ├── collectors/                # Live Google Flights scraping engine (IndiGo, AI, Akasa)
-│   │   ├── base.py                # Abstract BaseFareCollector contract
-│   │   └── google_flights.py      # Real-time multi-airline live scraper
-│   ├── contracts/                 # Pydantic schemas (RawQuote, NormalisedQuote, HeadlineIndex)
-│   ├── db/                        # SQLAlchemy database models, session & SQLite/Postgres engine
-│   ├── index_engine/              # Mathematical methodology (Medians, RouteIndex, Headline APIx)
-│   └── pipeline/                  # Outlier cleaning, deduplication & QA scoring
-├── data/
-│   └── reference/                 # 16 directional route basket & lead-time weights
-│       ├── route_basket.csv       # DGCA traffic-weighted 16 domestic city pairs
-│       └── lead_time_weights.csv  # T+1, T+7, T+15, T+30, T+45 booking horizon weights
-├── scripts/
-│   ├── fetch_google_flights.py    # CLI tool to test live airfare extraction for any route
-│   └── seed_30d_history.py        # Generates 30-day historical time-series & DGCA benchmarks
-├── tests/
-│   ├── e2e/test_smoke.py          # End-to-end API endpoint smoke tests
-│   └── integration/               # Pipeline data validation & QA score tests
-├── aerometrics.db                 # Zero-config SQLite database (or PostgreSQL via DATABASE_URL)
-└── pyproject.toml                 # Centralized tooling (Pytest, Ruff, MyPy)
+â”œâ”€â”€ apps/
+â”‚   â”œâ”€â”€ api/                       # FastAPI policy service & OpenAPI docs
+â”‚   â””â”€â”€ dashboard/                 # Next.js interactive policy dashboard
+â”œâ”€â”€ packages/
+â”‚   â”œâ”€â”€ collectors/                # Live Google Flights scraping engine (IndiGo, AI, Akasa)
+â”‚   â”‚   â”œâ”€â”€ base.py                # Abstract BaseFareCollector contract
+â”‚   â”‚   â””â”€â”€ google_flights.py      # Real-time multi-airline live scraper
+â”‚   â”œâ”€â”€ contracts/                 # Pydantic schemas (RawQuote, NormalisedQuote, HeadlineIndex)
+â”‚   â”œâ”€â”€ db/                        # SQLAlchemy database models, session & SQLite/Postgres engine
+â”‚   â”œâ”€â”€ index_engine/              # Mathematical methodology (Medians, RouteIndex, Headline APIx)
+â”‚   â””â”€â”€ pipeline/                  # Outlier cleaning, deduplication & QA scoring
+â”œâ”€â”€ data/
+â”‚   â””â”€â”€ reference/                 # 16 directional route basket & lead-time weights
+â”‚       â”œâ”€â”€ route_basket.csv       # DGCA traffic-weighted 16 domestic city pairs
+â”‚       â””â”€â”€ lead_time_weights.csv  # T+1, T+7, T+15, T+30, T+45 booking horizon weights
+â”œâ”€â”€ scripts/
+â”‚   â”œâ”€â”€ fetch_google_flights.py    # CLI tool to test live airfare extraction for any route
+â”‚   â””â”€â”€ seed_30d_history.py        # Generates 30-day historical time-series & DGCA benchmarks
+â”œâ”€â”€ tests/
+â”‚   â”œâ”€â”€ e2e/test_smoke.py          # End-to-end API endpoint smoke tests
+â”‚   â””â”€â”€ integration/               # Pipeline data validation & QA score tests
+â”œâ”€â”€ aerometrics.db                 # Zero-config SQLite database (or PostgreSQL via DATABASE_URL)
+â””â”€â”€ pyproject.toml                 # Centralized tooling (Pytest, Ruff, MyPy)
 ```
 
 ---
@@ -40,11 +43,11 @@ Aero-Metrics/
 
 | Component | Status | Details |
 |---|---|---|
-| **Multi-Source Scraping** | ✅ Active | Real-time extraction of live Indian airlines (Air India, IndiGo, Akasa, SpiceJet) via Google Flights with rate-limiting safeguards. |
-| **Data Cleaning Pipeline** | ✅ Active | Filters negative/zero fares, removes outliers, separates base fare vs statutory taxes/fees, and canonicalises flight keys. |
-| **30-Day Historical Database** | ✅ Active | Persistent SQLite/Postgres database seeded with 30 days of daily indices and DGCA benchmark comparisons. |
-| **Index Engine (APIx)** | ✅ Active | Computes route-horizon daily medians $P(r,h,t)$, advance-booking aggregates, and weighted National Headline APIx. |
-| **Policy API (FastAPI)** | ✅ Active | Typed REST endpoints with Swagger docs at `http://127.0.0.1:8000/docs` ready for NSO/RBI integration. |
+| **Multi-Source Scraping** | âœ… Active | Real-time extraction of live Indian airlines (Air India, IndiGo, Akasa, SpiceJet) via Google Flights with rate-limiting safeguards. |
+| **Data Cleaning Pipeline** | âœ… Active | Filters negative/zero fares, removes outliers, separates base fare vs statutory taxes/fees, and canonicalises flight keys. |
+| **30-Day Historical Database** | âœ… Active | Persistent SQLite/Postgres database seeded with 30 days of daily indices and DGCA benchmark comparisons. |
+| **Index Engine (APIx)** | âœ… Active | Computes route-horizon daily medians $P(r,h,t)$, advance-booking aggregates, and weighted National Headline APIx. |
+| **Policy API (FastAPI)** | âœ… Active | Typed REST endpoints with Swagger docs at `http://127.0.0.1:8000/docs` ready for NSO/RBI integration. |
 
 ---
 
@@ -58,7 +61,7 @@ python scripts/seed_30d_history.py
 ```
 
 ### 2. Extract Live Airfares (On-Demand)
-Query live flights and prices in native INR (`₹`) for any domestic city pair:
+Query live flights and prices in native INR (`â‚¹`) for any domestic city pair:
 
 ```bash
 # E.g., Delhi (DEL) to Mumbai (BOM) departing in 7 days
@@ -111,3 +114,4 @@ pytest tests/
 # Run code linter
 ruff check .
 ```
+
